@@ -4,9 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-    <h1>Login</h1>
+    <h3>Login</h3>
     <p>Please enter your credentials to login.</p>
+
+    <div id = "home-container">
+    <button onclick="window.location.href='/'" id="home-btn">Home</button>
+    </div>
+
+    <div id="login-container">
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button id="loginButton">Login</button>
+    </div>
+
 </body>
+
+<script>
+    const loginButton = document.getElementById('loginButton');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+
+    loginButton.addEventListener('click', async () => {
+        const username = usernameInput.value;
+        const password = passwordInput.value;
+
+        try {
+            const response = await fetch('/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem('access_token', data.access_token);
+                console.log('Token saved:', localStorage.getItem('access_token'));
+
+                setTimeout(() => {
+                 window.location.href = '/animals';   
+                }, 100);
+                
+                }
+             else {
+                alert('Login failed. Please check your credentials and try again.');
+            }
+        } catch (error) {
+            console.error('Error during login:', error);
+            alert('An error occurred. Please try again later.');
+        }
+    });
+</script>    
+    
 </html>

@@ -1,15 +1,36 @@
 <head>
     <title>Animals API</title>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
 
 <body>
-    <h1>Welcome to the Animals API!</h1>
+    <h3>Welcome to the Animals API!</h3>
+    <img src="static/images/logo-noBG.png" alt="Animals API Logo" width="200">
     <p>This API allows you to manage a collection of animals. You can create, read, update, and delete animal records.</p>
     <h2>Endpoints:</h2>
     <ul>
         <li><strong>POST /items</strong>: Create a new animal record.</li>
         <li><strong>GET /items</strong>: Retrieve all animal records.</li>
-        <li><strong>GET /items/&lt;id&gt;</strong>: Retrieve a specific animal record by ID.</li>
         <li><strong>PUT /items/&lt;id&gt;</strong>: Update a specific animal record by ID.</li>
         <li><strong>DELETE /items/&lt;id&gt;</strong>: Delete a specific animal record by ID.</li>
     </ul>
+
+    <div id = "button-container">
+    <button onclick="window.location.href='/login'" id="loginbtn">Login</button>
+    <button onclick="window.location.href='/register'" id="registerbtn">Register</button>
+    <button onclick="window.location.href='/animals'" id="view-animals-btn" style="display: none;">View Animals</button>
+    </div>
+</body>
+
+<script>
+    const token = localStorage.getItem('access_token');
+    if (token) {
+        document.getElementById('loginbtn').style.display = 'none';
+        document.getElementById('registerbtn').style.display = 'none';
+        document.getElementById('view-animals-btn').style.display = 'inline-block';
+    } else {
+        document.getElementById('loginbtn').style.display = 'inline-block';
+        document.getElementById('registerbtn').style.display = 'inline-block';
+        document.getElementById('view-animals-btn').style.display = 'none';
+    }
+</script>

@@ -4,9 +4,107 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Animals API</title>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
-<body>
-    <h1>Animals</h1>
+<body id="animals-body">
+    <header>
+    <div style="width: 120px;"></div>
+    <h1 id="animal-title">Animals</h1>
+    <div id = "logout-container">
+        <p id="display-username"></p>
+        <button onclick="logout()" id="logout-btn">Logout</button>
+    </div>
+    </header>
     <p>This is a simple page to display the animals.</p>
+
+    <div id="add-container">
+    <button onclick="window.location.href='/'" id="home-btn">Home</button>
+    </div>
+
+    <button onclick="window.location.href='/add-animal'" id="add-animal-btn">Add New Animal</button>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Species</th>
+            <th>Gender</th>
+            <th>Date of Birth</th>
+        </tr>
+        </thead>
+        <tbody id="animals-table-body"></tbody>
+    </table>
 </body>
+
+<script>
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+        window.location.href = '/login';
+    }
+
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    document.getElementById('display-username').textContent = `Logged in as: ${payload.sub}`;
+
+    async function fetchAnimals() {
+        try {
+            const response = await fetch('/items', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const animals = await response.json();
+            const tableBody = document.getElementById('animals-table-body');
+
+            tableBody.innerHTML = '';
+
+            
+            animals.forEach(animal => {
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+                    <td>${animal.id}</td>
+                    <td>${animal.Name}</td>
+                    <td>${animal.Age_Upon_Outcome}</td>
+                    <td>${animal.Animal_Type}</td>
+                    <td>${animal.Gender}</td>
+                    <td>${animal.Date_of_Birth}</td>
+                    <td>
+                        <button onclick="deleteAnimal('${animal._id}')" id="delete-btn">Delete</button>
+                        <button onclick="editAnimal('${animal._id}')" id="edit-btn">Edit</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+        catch (error) {
+            console.error('Error fetching animals:', error);
+        }
+    }
+    fetchAnimals();
+
+
+    async function deleteAnimal(id) {
+        try {
+            await fetch(`/items/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            alert('Animal deleted successfully');
+            location.reload();
+        } catch (error) {
+            console.error('Error deleting animal:', error);
+        }
+    }
+
+    function editAnimal(id) {
+        window.location.href = `/edit-animal/${id}`;
+    }
+
+    function logout() {
+        localStorage.removeItem('access_token');
+        window.location.href = '/';
+    }
+
+
+
+</script>
 </html>

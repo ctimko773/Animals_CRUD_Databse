@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Animal</title>
+    <link rel="stylesheet" href="/static/styles.css">
+
+</head>
+<body id = "add-animal-body">
+    <button onclick="window.location.href='/animals'" id="back-btn">Back to Animals</button>
+    <h3>Add New Animal</h3>
+    <form id="add-animal-form">
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="age">Age Upon Outcome:</label><br>
+        <input type="text" id="age" name="age" required><br><br>
+
+        <label for="species">Animal Type:</label><br>
+        <input type="text" id="species" name="species" required><br><br>
+
+        <label for="gender">Gender:</label><br>
+        <input type="text" id="gender" name="gender" required><br><br>  
+
+        <label for="dob">Date of Birth:</label><br>
+        <input type="date" id="dob" name="dob" required><br><br>
+
+        <button type="submit" id="add-animal-btn">Add Animal</button>
+    </form>
+
+    <script>
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            window.location.href = '/login';
+        }
+
+        document.getElementById('add-animal-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const age = document.getElementById('age').value;
+            const species = document.getElementById('species').value;
+            const gender = document.getElementById('gender').value;
+            const dob = document.getElementById('dob').value;
+            const formattedDob = new Date(dob).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+
+            try {
+                const response = await fetch('/items', {
+                    method: 'POST',
+                    headers: { 
+                        'Authorization' : `Bearer ${token}`, 
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        Name: name,
+                        Age_Upon_Outcome: age,
+                        Animal_Type: species,
+                        Gender: gender,
+                        Date_of_Birth: formattedDob
+                    })
+                });
+
+                if (response.ok) {
+                    alert('Animal added successfully!');
+                    document.getElementById('add-animal-form').reset();
+                    window.location.href = '/animals';
+                } else {
+                    const error = await response.json();
+                    alert(`Error: ${error.detail}`);
+                }
+            } catch (error) {
+                console.error('Error adding animal:', error);
+                alert('An error occurred while adding the animal.');
+            }
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Animal</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body id = "edit-animal-body">
+    <button onclick="window.location.href='/animals'" id="back-btn">Back to Animals</button>
+    <h3>Edit Animal</h3>
+    <form id="edit-animal-form">
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="age">Age Upon Outcome:</label><br>
+        <input type="text" id="age" name="age" required><br><br>
+
+        <label for="species">Animal Type:</label><br>
+        <input type="text" id="species" name="species" required><br><br>
+
+        <label for="gender">Gender:</label><br>
+        <input type="text" id="gender" name="gender" required><br><br>  
+
+        <label for="dob">Date of Birth:</label><br>
+        <input type="date" id="dob" name="dob" required><br><br>
+    </form>
+    <button type="submit" id="save-changes-btn">Save Changes</button>
+
+</html>
+
+<script>
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+        window.location.href = '/login';
+    }
+
+    const urlParts = window.location.pathname.split('/');
+    const animalId = urlParts[urlParts.length - 1];
+
+    async function fetchAnimalDetails() {
+        try {
+            const response = await fetch(`/items/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const animal = await response.json();
+
+            document.getElementById('name').value = animal.Name;
+            document.getElementById('age').value = animal.Age_Upon_Outcome;
+            document.getElementById('species').value = animal.Animal_Type;
+            document.getElementById('gender').value = animal.Gender;
+            const dob = new Date(animal.Date_of_Birth); 
+            const formattedDob = dob.toISOString().split('T')[0];
+            document.getElementById('dob').value = formattedDob;
+        } catch (error) {
+            console.error('Error fetching animal details:', error);
+            alert('An error occurred while fetching animal details. Please try again later.');
+        }
+    }

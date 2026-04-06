@@ -2,7 +2,8 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from database import get_db
 from bson import ObjectId
-from bson.errors import InvalidId
+from bson.errors import InvalidId 
+import uuid
 
 items_bp = Blueprint('items', __name__, url_prefix='/items')
 
@@ -27,23 +28,25 @@ def get_all():
 @jwt_required()
 def create():
     data = request.get_json()
-    id = data.get('id')
     Age = data.get('Age_Upon_Outcome')
-    Animal_ID = data.get('Animal_ID')
     Animal_Type = data.get('Animal_Type')
     Gender = data.get('Gender')
     name = data.get('Name')
     Date_of_Birth = data.get('Date_of_Birth')
     
 
-    if not id or not Age or not Animal_ID or not Animal_Type or not Gender or not name or not Date_of_Birth:
+    if not Age or not Animal_Type or not Gender or not name or not Date_of_Birth:
         return jsonify({"error": "Required fields are missing"}), 400
 
     db = get_db()
+
+    last_animal = db.animals.find_one(sort=[("id", -1)])
+    next_id = str(int(last_animal['id']) + 1) if last_animal else "1"
+
     result = db.animals.insert_one({
-        "id": id,
+        "id": next_id,
         "Age_Upon_Outcome": Age,
-        "Animal_ID": Animal_ID,
+        "Animal_ID": str(uuid.uuid4()),
         "Animal_Type": Animal_Type,
         "Gender": Gender,
         "Name": name,

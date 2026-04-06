@@ -4,8 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
-<body>
-    <h1>Register</h1>
+<body id="register-body">
+    <h3>Register</h3>
     <p>Please fill in the form to create an account.</p>
+
+    <button onclick="window.location.href='/'" id="home-btn">Home</button>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button id="registerButton">Register</button>
+
+</body>
+
+<script>
+    const registerButton = document.getElementById('registerButton');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+
+    registerButton.addEventListener('click', async () => {
+        const username = usernameInput.value;
+        const password = passwordInput.value;
+
+        try {
+            const response = await fetch('/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (response.ok) {
+                alert('Registration successful! You can now log in.');
+                // Redirect to the login page
+                window.location.href = '/login';
+            } else {
+                alert('Registration failed. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error during registration:', error);
+            alert('An error occurred. Please try again later.');
+        }
+    });
+</script>
+
 </html>

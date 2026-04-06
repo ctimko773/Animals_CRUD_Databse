@@ -32,5 +32,13 @@ def register():
 def animals():
     return render_template('animals.html')
 
+@app.get('/add-animal')
+def add_animal():
+    return render_template('add-animal.html')
+
+@app.get('/edit-animal/<id>')
+def edit_animal(id):
+    return render_template('edit-animal.html')
+
 if __name__ == '__main__':
     app.run(debug=False)
